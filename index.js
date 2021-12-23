@@ -3,6 +3,7 @@ const express = require('express')
 const app = express()
 const cors = require('cors');
 require('dotenv').config();
+const ObjectId = require("mongodb").ObjectId;
 
 
 const port = process.env.PORT || 5000
@@ -22,7 +23,28 @@ async function run() {
       const database = client.db("royal_wrist");
       const productsCollection = database.collection("products");
 
-      
+      // GET products
+      app.get('/AddProducts', async (req, res) => {
+        const result = await productsCollection.find({}).toArray();
+        res.json(result);
+      })
+
+      // POST products
+      app.post('/AddProducts', async (req, res) => {
+        const products = req.body;
+        const result = await productsCollection.insertOne(products)
+        res.send(result);
+      })
+
+        // GET singleProducts
+        app.get('/AddProducts/:id', async (req, res) => {
+          const id = req.params.id;
+          console.log('run',id);
+          const user = { _id: ObjectId(id) }
+          const cursor = await productsCollection.find(user).toArray();
+          res.json(cursor)
+        })
+  
       
     } finally {
     //   await client.close();
